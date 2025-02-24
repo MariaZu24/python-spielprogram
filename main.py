@@ -17,6 +17,7 @@ player_x = window_width // 2 - player_width // 2
 player_y = window_height - player_height - 10
 player_speed = 5
 
+
 # Set up the enemy
 enemy_width = 50
 enemy_height = 50
@@ -24,13 +25,22 @@ enemy_x = random.randint(0, window_width - enemy_width)
 enemy_y = 0
 enemy_speed = 3
 
+huhn_png = pygame.image.load("huhn.png").convert()
+
+
 # Game loop
 running = True
+x=0
 while running:
-    # Handle events
+    window.blit(huhn_png, (x, 30))
+    x += 1
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+
+     
 
     # Move the player
     keys = pygame.key.get_pressed()
@@ -53,4 +63,5 @@ while running:
     pygame.display.update()
 
 # Quit the game
+
 pygame.quit()
