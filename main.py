@@ -11,8 +11,8 @@ window = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption("Simple Game")
 
 # Set up the player
-player_width = 50
-player_height = 50
+player_width = 100
+player_height = 100
 player_x = window_width // 2 - player_width // 2
 player_y = window_height - player_height - 10
 player_speed = 5
@@ -23,17 +23,18 @@ enemy_width = 50
 enemy_height = 50
 enemy_x = random.randint(0, window_width - enemy_width)
 enemy_y = 0
-enemy_speed = 3
+enemy_speed = 1
 
-huhn_png = pygame.image.load("huhn.png").convert()
+huhn_png = pygame.image.load("huhn.png").convert_alpha()
+
+huhn_png = pygame.transform.scale(huhn_png, (player_width, player_height))
+huhn_png = pygame.transform.flip(huhn_png, True, False)
 
 
 # Game loop
 running = True
-x=0
+x=50
 while running:
-    window.blit(huhn_png, (x, 30))
-    x += 1
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -58,9 +59,13 @@ while running:
 
     # Draw the game
     window.fill((0, 0, 0))
-    pygame.draw.rect(window, (255, 0, 0), (player_x, player_y, player_width, player_height))
+
+    window.blit(huhn_png, (player_x, player_y))
+
+    #pygame.draw.rect(window, (255, 0, 0), (player_x, player_y, player_width, player_height))
     pygame.draw.rect(window, (0, 255, 0), (enemy_x, enemy_y, enemy_width, enemy_height))
-    pygame.display.update()
+    pygame.display.flip()
+
 
 # Quit the game
 
