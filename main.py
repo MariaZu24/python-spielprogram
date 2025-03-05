@@ -10,16 +10,19 @@ window_height = 600
 window = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption("Simple Game")
 
+background_shift = 0
+
 # Set up the player
 player_width = 100
 player_height = 100
 player_x = window_width // 2 - player_width // 2
 player_y = window_height - player_height - 10
-player_speed = 5
+player_speed = 2
 # Jumping
 player_is_jumping = False
 player_jump_height = 100
 player_jump_speed = 1
+
 
 def jump():
     global player_y, player_is_jumping
@@ -33,7 +36,10 @@ def update_player():
         player_jump_height -= player_jump_speed
         
         if player_jump_height <= 0:
+            player_jump_speed = -player_jump_speed
+        if player_jump_height >= 100:
             player_is_jumping = False
+            player_jump_speed = -player_jump_speed
 
 
 
@@ -45,6 +51,8 @@ enemy_y = 0
 enemy_speed = 1
 
 huhn_png = pygame.image.load("huhn.png").convert_alpha()
+background = pygame.image.load("background.png")
+background = pygame.transform.scale(background, (window_width, window_height))
 
 huhn_png = pygame.transform.scale(huhn_png, (player_width, player_height))
 huhn_png = pygame.transform.flip(huhn_png, True, False)
@@ -71,6 +79,7 @@ while running:
     if keys[pygame.K_UP]:
         jump()
 
+
     # Move the enemy
     enemy_y += enemy_speed
 
@@ -79,7 +88,11 @@ while running:
         running = False
 
     # Draw the game
-    window.fill((0, 0, 0))
+    window.blit(background, (0-background_shift, 0))
+    window.blit(background, (window_width-background_shift, 0))
+    background_shift += 1
+    if background_shift >= window_width:
+        background_shift = 0
 
     window.blit(huhn_png, (player_x, player_y))
 
