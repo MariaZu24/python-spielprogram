@@ -16,6 +16,25 @@ player_height = 100
 player_x = window_width // 2 - player_width // 2
 player_y = window_height - player_height - 10
 player_speed = 5
+# Jumping
+player_is_jumping = False
+player_jump_height = 100
+player_jump_speed = 1
+
+def jump():
+    global player_y, player_is_jumping
+    if not player_is_jumping:
+        player_is_jumping = True
+
+def update_player():
+    global player_y, player_is_jumping, player_jump_height, player_jump_speed 
+    if player_is_jumping:
+        player_y -= player_jump_speed
+        player_jump_height -= player_jump_speed
+        
+        if player_jump_height <= 0:
+            player_is_jumping = False
+
 
 
 # Set up the enemy
@@ -40,15 +59,17 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-
+    # jump
+    update_player()
      
-
     # Move the player
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT] and player_x > 0:
         player_x -= player_speed
     if keys[pygame.K_RIGHT] and player_x < window_width - player_width:
         player_x += player_speed
+    if keys[pygame.K_UP]:
+        jump()
 
     # Move the enemy
     enemy_y += enemy_speed
