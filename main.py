@@ -8,20 +8,65 @@ pygame.init()
 window_width = 800
 window_height = 600
 window = pygame.display.set_mode((window_width, window_height))
-pygame.display.set_caption("Simple Game")
+pygame.display.set_caption("My first game")
 
 background_shift = 0
+
+# background music
+pygame.mixer.music.load ("game_music.mp3")
+pygame.mixer.music.play(-1,0.0)
+pygame.mixer.music.set_volume(1.0)
+
+# Sound wenn Huhn getroffen
+getroffen = pygame.mixer.Sound('chicken_noise.mp3')
+
 
 # Set up the player
 player_width = 100
 player_height = 100
 player_x = window_width // 2 - player_width // 2
-player_y = window_height - player_height - 10
+player_y = window_height - player_height - 100
 player_speed = 2
 # Jumping
 player_is_jumping = False
-player_jump_height = 100
-player_jump_speed = 1
+player_jump_height = 150
+player_jump_speed = 2
+
+# Set up the clock
+clock = pygame.time.Clock() 
+
+# level of difficulty
+font = pygame.font.Font(None, 36)
+
+def draw_text(text, x, y):
+    text_surface = font.render(text, True, (255, 0, 255))
+    window.blit(text_surface, (x, y))
+
+def menu():
+    global difficssulty
+    # This is a menu loop
+    while True:
+        window.fill((0, 0, 0))
+        draw_text("select Difficulty", window_width // 2 - 100, window_height // 2 - 100)
+
+        draw_text("Press 1 for easy", window_width // 2 - 100, window_height // 2)
+        draw_text("Press 2 for medium", window_width // 2 - 100, window_height // 2 + 50)
+        draw_text("Press 3 for hard", window_width // 2 - 100, window_height // 2 + 100)
+
+        pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    difficulty = 1
+                    return
+                if event.key == pygame.K_2:
+                    difficulty = 2
+                    return
+                if event.key == pygame.K_3:
+                    difficulty = 3
+                    return
 
 
 def jump():
@@ -37,7 +82,7 @@ def update_player():
         
         if player_jump_height <= 0:
             player_jump_speed = -player_jump_speed
-        if player_jump_height >= 100:
+        if player_jump_height >= 150:
             player_is_jumping = False
             player_jump_speed = -player_jump_speed
 
@@ -57,12 +102,15 @@ background = pygame.transform.scale(background, (window_width, window_height))
 huhn_png = pygame.transform.scale(huhn_png, (player_width, player_height))
 huhn_png = pygame.transform.flip(huhn_png, True, False)
 
+# Show menu splash screen
+menu()
 
-# Game loop
+# Main Game loop
 running = True
-x=50
+
 while running:
 
+    clock.tick(60)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -74,6 +122,7 @@ while running:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT] and player_x > 0:
         player_x -= player_speed
+        background_shift -= 0.8
     if keys[pygame.K_RIGHT] and player_x < window_width - player_width:
         player_x += player_speed
     if keys[pygame.K_UP]:
@@ -83,6 +132,13 @@ while running:
     # Move the enemy
     enemy_y += enemy_speed
 
+               # if kollisionskontrolle(kugelX-30,kugelY-25,gegnerX[durchgang], gegnerY[durchgang]) == True:
+                # Kugel hat getroffen
+                # print("Kugel hat getroffen")
+               # pygame.mixer.Sound.play(getroffen)
+
+
+
     # Check for collision
     if player_x < enemy_x + enemy_width and player_x + player_width > enemy_x and player_y < enemy_y + enemy_height and player_y + player_height > enemy_y:
         running = False
@@ -90,7 +146,7 @@ while running:
     # Draw the game
     window.blit(background, (0-background_shift, 0))
     window.blit(background, (window_width-background_shift, 0))
-    background_shift += 1
+    background_shift += 0.5
     if background_shift >= window_width:
         background_shift = 0
 
