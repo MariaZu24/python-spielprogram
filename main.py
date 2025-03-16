@@ -27,10 +27,12 @@ player_height = 100
 player_x = window_width // 2 - player_width // 2
 player_y = window_height - player_height - 100
 player_speed = 2
+
 # Jumping
 player_is_jumping = False
-player_jump_height = 150
-player_jump_speed = 2
+player_current_jump_height = 0
+player_jump_speed = 5
+gravity = 1
 
 # Set up the clock
 clock = pygame.time.Clock() 
@@ -75,15 +77,15 @@ def jump():
         player_is_jumping = True
 
 def update_player():
-    global player_y, player_is_jumping, player_jump_height, player_jump_speed 
+    global player_x, player_y, player_is_jumping, player_current_jump_height, player_jump_speed 
     if player_is_jumping:
         player_y -= player_jump_speed
-        player_jump_height -= player_jump_speed
-        
-        if player_jump_height <= 0:
+        player_current_jump_height += player_jump_speed
+        oben_ist_zu = player_y <= 310 and (player_x > 300 and player_x < 500)
+        if player_current_jump_height <= 0:
             player_jump_speed = -player_jump_speed
-        if player_jump_height >= 150:
             player_is_jumping = False
+        if (player_current_jump_height >= 200 or oben_ist_zu):
             player_jump_speed = -player_jump_speed
 
 
@@ -149,9 +151,11 @@ while running:
     background_shift += 0.5
     if background_shift >= window_width:
         background_shift = 0
-
+    # Rectangle
+    pygame.draw.rect(window, (255, 0, 0), (300, 300, 200, 20))
     window.blit(huhn_png, (player_x, player_y))
-
+    draw_text(f"Jumping {player_is_jumping} x:{player_x} y:{player_y}", 0,0)
+    draw_text(f"Jump Height {player_current_jump_height}", 0,50)
     #pygame.draw.rect(window, (255, 0, 0), (player_x, player_y, player_width, player_height))
     pygame.draw.rect(window, (0, 255, 0), (enemy_x, enemy_y, enemy_width, enemy_height))
     pygame.display.flip()
