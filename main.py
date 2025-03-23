@@ -28,6 +28,12 @@ player_x = window_width // 2 - player_width // 2
 player_y = window_height - player_height - 100
 player_speed = 2
 
+
+# Define the rectangles
+rect1_x, rect1_y, rect1_width, rect1_height = 300, 250, 200, 20
+rect2_x, rect2_y, rect2_width, rect2_height = 300, 100, 200, 20
+rect3_x, rect3_y, rect3_width, rect3_height = 300, 380, 200, 20
+
 # Jumping
 player_is_jumping = False
 player_current_jump_height = 0
@@ -151,11 +157,20 @@ while running:
     background_shift += 0.5
     if background_shift >= window_width:
         background_shift = 0
-    # Rectangle
-    pygame.draw.rect(window, (255, 0, 0), (300, 300, 200, 20))
+    # Rectangle01
+    pygame.draw.rect(window, (102, 51, 0), (rect1_x, rect1_y, rect1_width, rect1_height))
     window.blit(huhn_png, (player_x, player_y))
     draw_text(f"Jumping {player_is_jumping} x:{player_x} y:{player_y}", 0,0)
     draw_text(f"Jump Height {player_current_jump_height}", 0,50)
+    
+     # Rectangle02
+    pygame.draw.rect(window, (102, 51, 0), (rect2_x, rect2_y, rect2_width, rect2_height))
+    window.blit(huhn_png, (player_x, player_y))
+
+     # Rectangle03
+    pygame.draw.rect(window, (102, 51, 0), (rect3_x, rect3_y, rect3_width, rect3_height))
+    window.blit(huhn_png, (player_x, player_y))
+
     #pygame.draw.rect(window, (255, 0, 0), (player_x, player_y, player_width, player_height))
     pygame.draw.rect(window, (0, 255, 0), (enemy_x, enemy_y, enemy_width, enemy_height))
     pygame.display.flip()
