@@ -23,6 +23,14 @@ pygame.mixer.music.load ("game_music.mp3")
 pygame.mixer.music.play(-1,0.0)
 pygame.mixer.music.set_volume(1.0)
 
+# egg 
+egg_01 = pygame.image.load("egg.png")
+egg_01 = pygame.transform.scale(egg_01, (50, 50))
+
+egg_02 = pygame.image.load("egg.png")
+egg_02 = pygame.transform.scale(egg_02, (50, 50))
+
+
 
 
 # Sound wenn Huhn getroffen
@@ -101,14 +109,17 @@ def menu():
                 if event.key == pygame.K_1:
                     difficulty = 1
                     scroll_speed = 0.5
+                    enemy_speed = 1
                     return
                 if event.key == pygame.K_2:
                     difficulty = 2
                     scroll_speed = 1
+                    enemy_speed = 2
                     return
                 if event.key == pygame.K_3:
                     difficulty = 3
                     scroll_speed = 3
+                    enemy_speed = 3
                     return
 
 
@@ -165,6 +176,20 @@ def update_player():
         player_is_jumping = False
         player_jump_speed = 0
 
+
+#sed up egg
+egg_width = 50
+egg_height = 50
+egg_x = random.randint(0, window_width - egg_width)
+egg_y = 0
+egg_speed = 1
+
+egg02_width = 50
+egg02_height = 50
+egg02_x = random.randint(0, window_width - egg_width)
+egg02_y = 0
+egg02_speed = 1
+
 # Set up the enemy
 enemy_width = 50
 enemy_height = 50
@@ -199,6 +224,9 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+
+        
+    
      # Rechtecke nach links bewegen
     rect1_x -= scroll_speed
     rect2_x -= scroll_speed
@@ -219,16 +247,6 @@ while running:
     # jump
     update_player()
      
-    # Move the player
-    #keys = pygame.key.get_pressed()
-    #if keys[pygame.K_LEFT] and player_x > 0:
-     #   player_x > 0:
-      #  background_shift -= 0.8
-    #if keys[pygame.K_RIGHT] and player_x < window_width - player_width:
-    #    player_x += player_speed
-    #if keys[pygame.K_UP]:
-    #    jump()
-
     # Spieler bewegen
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT] and player_x > 0:
@@ -249,7 +267,8 @@ while running:
                 # print("Kugel hat getroffen")
                # pygame.mixer.Sound.play(getroffen)
 
-
+    egg_y += egg_speed
+    egg02_y += egg02_speed
 
     # Check for collision
     if player_x < enemy_x + enemy_width and player_x + player_width > enemy_x and player_y < enemy_y + enemy_height and player_y + player_height > enemy_y:
@@ -257,6 +276,20 @@ while running:
 
     if player_x < enemy02_x + enemy02_width and player_x + player_width > enemy02_x and player_y < enemy02_y + enemy02_height and player_y + player_height > enemy02_y:
         running = False
+
+    # Check for collision with egg
+    if player_x < egg_x + egg_width and player_x + player_width > egg_x and player_y < egg_y + egg_height and player_y + player_height > egg_y:
+        egg_y = 0
+        egg_x = random.randint(0, window_width - egg_width)
+        egg_speed += 0.5
+
+    if player_x < egg02_x + egg02_width and player_x + player_width > egg02_x and player_y < egg02_y + egg02_height and player_y + player_height > egg02_y:
+        egg02_y = 0
+        egg02_x = random.randint(0, window_width - egg02_width)
+        egg02_speed += 0.5
+        # Perform any additional actions when the egg is collected
+        # For example, increase the player's score or play a sound effect
+
 
     # Draw the game
     window.blit(background, (0 - background_shift, 0))
@@ -279,9 +312,13 @@ while running:
     pygame.draw.rect(window, (102, 51, 0), (rect3_x, rect3_y, rect3_width, rect3_height))
     window.blit(huhn_png, (player_x, player_y))
 
+    # Draw the eggs
+    window.blit(egg_01, (egg_x, egg_y))
+    window.blit(egg_02, (egg02_x, egg02_y))
+
     #pygame.draw.rect(window, (255, 0, 0), (player_x, player_y, player_width, player_height))
     pygame.draw.circle(window, (204, 0, 0), (enemy_x + enemy_width // 2, enemy_y + enemy_height // 2), 30)
-    pygame.draw.circle(window, (204, 0, 0), (enemy_x + enemy_width // 2, enemy_y + enemy_height // 2), 30)
+    pygame.draw.circle(window, (204, 0, 0), (enemy02_x + enemy02_width // 2, enemy02_y + enemy02_height // 2), 30)
     pygame.display.flip()
 
 
