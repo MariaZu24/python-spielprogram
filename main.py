@@ -214,6 +214,30 @@ huhn_png = pygame.transform.flip(huhn_png, True, False)
 # Show menu splash screen
 menu()
 
+def game_over():
+    window.fill((0, 0, 0))
+    # Draw "Game Over" text with larger font and cool effects
+    large_font = pygame.font.Font(None, 72)
+    game_over_surface = large_font.render("Game Over", True, (255, 0, 0))
+    game_over_rect = game_over_surface.get_rect(center=(window_width // 2, window_height // 2 - 50))
+    
+    # Add shadow effect
+    shadow_surface = large_font.render("Game Over", True, (0, 0, 0))
+    shadow_rect = shadow_surface.get_rect(center=(window_width // 2 + 5, window_height // 2 - 45))
+    
+    window.blit(shadow_surface, shadow_rect)
+    window.blit(game_over_surface, game_over_rect)
+    draw_text("Press any key to exit", window_width // 2 - 150, window_height // 2)
+    pygame.display.flip()
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                waiting = False
+
 # Main Game loop
 running = True
 
@@ -273,9 +297,11 @@ while running:
     # Check for collision
     if player_x < enemy_x + enemy_width and player_x + player_width > enemy_x and player_y < enemy_y + enemy_height and player_y + player_height > enemy_y:
         running = False
+        game_over()
 
     if player_x < enemy02_x + enemy02_width and player_x + player_width > enemy02_x and player_y < enemy02_y + enemy02_height and player_y + player_height > enemy02_y:
         running = False
+        game_over()
 
     # Check for collision with egg
     if player_x < egg_x + egg_width and player_x + player_width > egg_x and player_y < egg_y + egg_height and player_y + player_height > egg_y:
