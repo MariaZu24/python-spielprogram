@@ -172,6 +172,13 @@ enemy_x = random.randint(0, window_width - enemy_width)
 enemy_y = 0
 enemy_speed = 1
 
+enemy02_width = 50
+enemy02_height = 50
+enemy02_x = random.randint(0, window_width - enemy_width)
+enemy02_y = 0
+enemy02_speed = 1
+
+
 huhn_png = pygame.image.load("huhn.png").convert_alpha()
 background = pygame.image.load("background.png")
 background = pygame.transform.scale(background, (window_width, window_height))
@@ -235,6 +242,7 @@ while running:
 
     # Move the enemy
     enemy_y += enemy_speed
+    enemy02_y += enemy02_speed
 
                # if kollisionskontrolle(kugelX-30,kugelY-25,gegnerX[durchgang], gegnerY[durchgang]) == True:
                 # Kugel hat getroffen
@@ -245,6 +253,9 @@ while running:
 
     # Check for collision
     if player_x < enemy_x + enemy_width and player_x + player_width > enemy_x and player_y < enemy_y + enemy_height and player_y + player_height > enemy_y:
+        running = False
+
+    if player_x < enemy02_x + enemy02_width and player_x + player_width > enemy02_x and player_y < enemy02_y + enemy02_height and player_y + player_height > enemy02_y:
         running = False
 
     # Draw the game
@@ -269,7 +280,8 @@ while running:
     window.blit(huhn_png, (player_x, player_y))
 
     #pygame.draw.rect(window, (255, 0, 0), (player_x, player_y, player_width, player_height))
-    pygame.draw.circle(window, (0, 255, 0), (enemy_x + enemy_width // 2, enemy_y + enemy_height // 2), 50)
+    pygame.draw.circle(window, (204, 0, 0), (enemy_x + enemy_width // 2, enemy_y + enemy_height // 2), 30)
+    pygame.draw.circle(window, (204, 0, 0), (enemy_x + enemy_width // 2, enemy_y + enemy_height // 2), 30)
     pygame.display.flip()
 
 
