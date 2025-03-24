@@ -8,16 +8,22 @@ pygame.init()
 window_width = 800
 window_height = 600
 window = pygame.display.set_mode((window_width, window_height))
-pygame.display.set_caption("My first game")
+pygame.display.set_caption("Huhn spiel")
+
+#GROUND_Level = window_height - player_height - 100
 
 background_shift = 0
 
+gravity = 0.5
 scroll_speed = 0.5
+jump_power = -14
 
 # background music
 pygame.mixer.music.load ("game_music.mp3")
 pygame.mixer.music.play(-1,0.0)
 pygame.mixer.music.set_volume(1.0)
+
+
 
 # Sound wenn Huhn getroffen
 getroffen = pygame.mixer.Sound('chicken_noise.mp3')
@@ -26,9 +32,34 @@ getroffen = pygame.mixer.Sound('chicken_noise.mp3')
 # Set up the player
 player_width = 100
 player_height = 100
+
+GROUND_Level = window_height - player_height - 100
+
 player_x = window_width // 2 - player_width // 2
-player_y = window_height - player_height - 100
-player_speed = 2
+player_y = GROUND_Level
+player_jump_speed = 5
+player_speed = 5
+
+
+
+#player_jump_speed = 0
+#player_is_jumping = False
+#on_ground = False  
+
+#starting-enemy_height = 300
+
+def auf_platform():
+    for rect in [(rect1_x, rect1_y, rect1_width, rect1_height),
+                 (rect2_x, rect2_y, rect2_width, rect2_height),
+                 (rect3_x, rect3_y, rect3_width, rect3_height)]:
+        if (player_x + player_width > rect[0] and 
+            player_x < rect[0] + rect[2] and
+            player_y + player_height >= rect[1] and 
+            player_y + player_height <= rect[1] + rect[3]):
+            return True
+    return False
+
+
 
 
 # Define the rectangles
@@ -38,9 +69,7 @@ rect3_x, rect3_y, rect3_width, rect3_height = random.randint(0, window_width - 2
 
 # Jumping
 player_is_jumping = False
-player_current_jump_height = 0
-player_jump_speed = 5
-gravity = 1
+player_jump_speed = 0
 
 # Set up the clock
 clock = pygame.time.Clock() 
@@ -53,7 +82,8 @@ def draw_text(text, x, y):
     window.blit(text_surface, (x, y))
 
 def menu():
-    global difficssulty
+    global difficulty
+    global scroll_speed
     # This is a menu loop
     while True:
         window.fill((0, 0, 0))
@@ -70,31 +100,65 @@ def menu():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
                     difficulty = 1
+                    scroll_speed = 0.5
                     return
                 if event.key == pygame.K_2:
                     difficulty = 2
+                    scroll_speed = 1
                     return
                 if event.key == pygame.K_3:
                     difficulty = 3
+                    scroll_speed = 3
                     return
 
 
 def jump():
-    global player_y, player_is_jumping
-    if not player_is_jumping:
+    global player_y, player_is_jumping , player_jump_speed
+    if not player_is_jumping and (player_y >= GROUND_Level or auf_platform()):
         player_is_jumping = True
+        player_jump_speed = jump_power
+
+#def update_player():
+    #global player_x, player_y, player_is_jumping, player_current_jump_height, player_jump_speed 
+    #if player_is_jumping:
+     #   player_y -= player_jump_speed
+      #  player_current_jump_height += player_jump_speed
+       # oben_ist_zu = player_y <= 310 and (player_x > 300 and player_x < 500)
+        #if player_current_jump_height <= 0:
+         #   player_jump_speed = -player_jump_speed
+          #  player_is_jumping = False
+        #if (player_current_jump_height >= 200 or oben_ist_zu):
+         #   player_jump_speed = -player_jump_speed
+
 
 def update_player():
-    global player_x, player_y, player_is_jumping, player_current_jump_height, player_jump_speed 
+    global player_y, player_is_jumping, player_jump_speed
+
+    # Schwerkraft anwenden
     if player_is_jumping:
-        player_y -= player_jump_speed
-        player_current_jump_height += player_jump_speed
-        oben_ist_zu = player_y <= 310 and (player_x > 300 and player_x < 500)
-        if player_current_jump_height <= 0:
-            player_jump_speed = -player_jump_speed
+        player_jump_speed += gravity
+    player_y += player_jump_speed
+
+    # Kollision mit Plattformen prüfen
+    for rect in [(rect1_x, rect1_y, rect1_width, rect1_height),
+                 (rect2_x, rect2_y, rect2_width, rect2_height),
+                 (rect3_x, rect3_y, rect3_width, rect3_height)]:
+        if (player_x < rect[0] + rect[2] and 
+            player_x + player_width > rect[0] and
+            player_y + player_height >= rect[1] and 
+            player_y + player_height <= rect[1] + rect[3] + 5):
+            
+            player_y = rect[1] - player_height  # Auf Plattform setzen
             player_is_jumping = False
-        if (player_current_jump_height >= 200 or oben_ist_zu):
-            player_jump_speed = -player_jump_speed
+            player_jump_speed = 0  # Fall stoppen
+            return  # Keine weitere Bewegung mehr prüfen
+
+    # Kollision mit dem Boden
+    if player_y >= GROUND_Level:
+        player_y = GROUND_Level
+        player_is_jumping = False
+        player_jump_speed = 0
+
 
 
 
@@ -192,7 +256,7 @@ while running:
     pygame.draw.rect(window, (102, 51, 0), (rect1_x, rect1_y, rect1_width, rect1_height))
     window.blit(huhn_png, (player_x, player_y))
     draw_text(f"Jumping {player_is_jumping} x:{player_x} y:{player_y}", 0,0)
-    draw_text(f"Jump Height {player_current_jump_height}", 0,50)
+    draw_text(f"Jump Height", 0,50)
     
      # Rectangle02
     pygame.draw.rect(window, (102, 51, 0), (rect2_x, rect2_y, rect2_width, rect2_height))
