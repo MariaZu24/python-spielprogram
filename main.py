@@ -31,8 +31,6 @@ egg_02 = pygame.image.load("egg.png")
 egg_02 = pygame.transform.scale(egg_02, (50, 50))
 
 
-
-
 # Sound wenn Huhn getroffen
 getroffen = pygame.mixer.Sound('chicken_noise.mp3')
 
@@ -240,6 +238,7 @@ def game_over():
 
 # Main Game loop
 running = True
+egg_counter = 0
 
 while running:
 
@@ -284,15 +283,21 @@ while running:
 
     # Move the enemy
     enemy_y += enemy_speed
+    if (enemy_y > (window_height-20)):
+        enemy_y = 0
+        enemy_x = random.randint(0, window_width - enemy_width)
     enemy02_y += enemy02_speed
-
-               # if kollisionskontrolle(kugelX-30,kugelY-25,gegnerX[durchgang], gegnerY[durchgang]) == True:
-                # Kugel hat getroffen
-                # print("Kugel hat getroffen")
-               # pygame.mixer.Sound.play(getroffen)
-
+    if (enemy_y > (window_height - 20)):
+        enemy_y = 0
+        enemy_x = random.randint(0, window_width - enemy_width)
     egg_y += egg_speed
+    if (egg_y > (window_height - 20)):
+        egg_y = 0
+        egg_x = random.randint(0, window_width - egg_width)
     egg02_y += egg02_speed
+    if (egg02_y > (window_height - 20)):    
+        egg02_y = 0
+        egg02_x = random.randint(0, window_width - egg02_width)
 
     # Check for collision
     if player_x < enemy_x + enemy_width and player_x + player_width > enemy_x and player_y < enemy_y + enemy_height and player_y + player_height > enemy_y:
@@ -308,11 +313,13 @@ while running:
         egg_y = 0
         egg_x = random.randint(0, window_width - egg_width)
         egg_speed += 0.5
+        egg_counter+=1
 
     if player_x < egg02_x + egg02_width and player_x + player_width > egg02_x and player_y < egg02_y + egg02_height and player_y + player_height > egg02_y:
         egg02_y = 0
         egg02_x = random.randint(0, window_width - egg02_width)
         egg02_speed += 0.5
+        egg_counter+=1
         # Perform any additional actions when the egg is collected
         # For example, increase the player's score or play a sound effect
 
@@ -327,8 +334,7 @@ while running:
     # Rectangle01
     pygame.draw.rect(window, (102, 51, 0), (rect1_x, rect1_y, rect1_width, rect1_height))
     window.blit(huhn_png, (player_x, player_y))
-    draw_text(f"Jumping {player_is_jumping} x:{player_x} y:{player_y}", 0,0)
-    draw_text(f"Jump Height", 0,50)
+    
     
      # Rectangle02
     pygame.draw.rect(window, (102, 51, 0), (rect2_x, rect2_y, rect2_width, rect2_height))
@@ -341,6 +347,9 @@ while running:
     # Draw the eggs
     window.blit(egg_01, (egg_x, egg_y))
     window.blit(egg_02, (egg02_x, egg02_y))
+
+    # Draw a counter of the eggs on the screen
+    draw_text(f"Eggs: {egg_counter}", 10, 10)
 
     #pygame.draw.rect(window, (255, 0, 0), (player_x, player_y, player_width, player_height))
     pygame.draw.circle(window, (204, 0, 0), (enemy_x + enemy_width // 2, enemy_y + enemy_height // 2), 30)
