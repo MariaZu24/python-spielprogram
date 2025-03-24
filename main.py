@@ -12,6 +12,8 @@ pygame.display.set_caption("My first game")
 
 background_shift = 0
 
+scroll_speed = 0.5
+
 # background music
 pygame.mixer.music.load ("game_music.mp3")
 pygame.mixer.music.play(-1,0.0)
@@ -30,9 +32,9 @@ player_speed = 2
 
 
 # Define the rectangles
-rect1_x, rect1_y, rect1_width, rect1_height = 300, 250, 200, 20
-rect2_x, rect2_y, rect2_width, rect2_height = 300, 100, 200, 20
-rect3_x, rect3_y, rect3_width, rect3_height = 300, 380, 200, 20
+rect1_x, rect1_y, rect1_width, rect1_height = random.randint(0, window_width - 20), 250, 200, 20
+rect2_x, rect2_y, rect2_width, rect2_height = random.randint(0, window_width - 20), 100, 200, 20
+rect3_x, rect3_y, rect3_width, rect3_height = random.randint(0, window_width - 20), 380, 200, 20
 
 # Jumping
 player_is_jumping = False
@@ -96,6 +98,8 @@ def update_player():
 
 
 
+
+
 # Set up the enemy
 enemy_width = 50
 enemy_height = 50
@@ -123,18 +127,45 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+     # Rechtecke nach links bewegen
+    rect1_x -= scroll_speed
+    rect2_x -= scroll_speed
+    rect3_x -= scroll_speed
+
+    # Rechtecke zurücksetzen, wenn sie den Bildschirm verlassen
+    if rect1_x + rect1_width < 0:
+        rect1_x = window_width
+        rect1_y = random.randint(0, window_height - 20)
+    if rect2_x + rect2_width < 0:
+        rect2_x = window_width
+        rect2_y = random.randint(0, window_height - 20)
+    if rect3_x + rect3_width < 0:
+        rect3_x = window_width
+        rect3_y = random.randint(0, window_height - 20)
+       
+
     # jump
     update_player()
      
     # Move the player
+    #keys = pygame.key.get_pressed()
+    #if keys[pygame.K_LEFT] and player_x > 0:
+     #   player_x > 0:
+      #  background_shift -= 0.8
+    #if keys[pygame.K_RIGHT] and player_x < window_width - player_width:
+    #    player_x += player_speed
+    #if keys[pygame.K_UP]:
+    #    jump()
+
+    # Spieler bewegen
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT] and player_x > 0:
         player_x -= player_speed
-        background_shift -= 0.8
     if keys[pygame.K_RIGHT] and player_x < window_width - player_width:
         player_x += player_speed
     if keys[pygame.K_UP]:
         jump()
+
 
 
     # Move the enemy
@@ -154,8 +185,8 @@ while running:
     # Draw the game
     window.blit(background, (0-background_shift, 0))
     window.blit(background, (window_width-background_shift, 0))
-    background_shift += 0.5
-    if background_shift >= window_width:
+    background_shift -= scroll_speed
+    if background_shift <= window_width:
         background_shift = 0
     # Rectangle01
     pygame.draw.rect(window, (102, 51, 0), (rect1_x, rect1_y, rect1_width, rect1_height))
