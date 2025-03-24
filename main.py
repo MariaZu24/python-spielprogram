@@ -140,6 +140,7 @@ def update_player():
     player_y += player_jump_speed
 
     # Kollision mit Plattformen prüfen
+    on_platform = False
     for rect in [(rect1_x, rect1_y, rect1_width, rect1_height),
                  (rect2_x, rect2_y, rect2_width, rect2_height),
                  (rect3_x, rect3_y, rect3_width, rect3_height)]:
@@ -151,18 +152,18 @@ def update_player():
             player_y = rect[1] - player_height  # Auf Plattform setzen
             player_is_jumping = False
             player_jump_speed = 0  # Fall stoppen
-            return  # Keine weitere Bewegung mehr prüfen
+            on_platform = True
+            break  # Keine weitere Bewegung mehr prüfen
+
+    # Wenn der Spieler nicht auf einer Plattform ist, Schwerkraft anwenden
+    if not on_platform:
+        player_is_jumping = True
 
     # Kollision mit dem Boden
     if player_y >= GROUND_Level:
         player_y = GROUND_Level
         player_is_jumping = False
         player_jump_speed = 0
-
-
-
-
-
 
 # Set up the enemy
 enemy_width = 50
@@ -247,11 +248,12 @@ while running:
         running = False
 
     # Draw the game
-    window.blit(background, (0-background_shift, 0))
-    window.blit(background, (window_width-background_shift, 0))
-    background_shift -= scroll_speed
-    if background_shift <= window_width:
+    window.blit(background, (0 - background_shift, 0))
+    window.blit(background, (window_width - background_shift, 0))
+    background_shift += scroll_speed
+    if background_shift >= window_width:  # Corrected condition
         background_shift = 0
+
     # Rectangle01
     pygame.draw.rect(window, (102, 51, 0), (rect1_x, rect1_y, rect1_width, rect1_height))
     window.blit(huhn_png, (player_x, player_y))
@@ -267,7 +269,7 @@ while running:
     window.blit(huhn_png, (player_x, player_y))
 
     #pygame.draw.rect(window, (255, 0, 0), (player_x, player_y, player_width, player_height))
-    pygame.draw.rect(window, (0, 255, 0), (enemy_x, enemy_y, enemy_width, enemy_height))
+    pygame.draw.circle(window, (0, 255, 0), (enemy_x + enemy_width // 2, enemy_y + enemy_height // 2), 50)
     pygame.display.flip()
 
 
