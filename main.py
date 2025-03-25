@@ -1,7 +1,6 @@
 import pygame
 import random
 
-# Initialize Pygame
 pygame.init()
 
 # Set up the game window
@@ -32,7 +31,7 @@ egg_02 = pygame.transform.scale(egg_02, (50, 50))
 
 
 # Sound wenn Huhn getroffen
-getroffen = pygame.mixer.Sound('chicken_noise.mp3')
+#getroffen = pygame.mixer.Sound('chicken_noise.mp3')
 
 
 # Set up the player
@@ -46,13 +45,19 @@ player_y = GROUND_Level
 player_jump_speed = 5
 player_speed = 5
 
+# Set up the enemy
+enemy_width = 50
+enemy_height = 50
+enemy_x = random.randint(0, window_width - enemy_width)
+enemy_y = 0
+enemy_speed = 1.5
 
+enemy02_width = 50
+enemy02_height = 50
+enemy02_x = random.randint(0, window_width - enemy02_width)
+enemy02_y = 0
+enemy02_speed = 2
 
-#player_jump_speed = 0
-#player_is_jumping = False
-#on_ground = False  
-
-#starting-enemy_height = 300
 
 def auf_platform():
     for rect in [(rect1_x, rect1_y, rect1_width, rect1_height),
@@ -107,17 +112,18 @@ def menu():
                 if event.key == pygame.K_1:
                     difficulty = 1
                     scroll_speed = 0.5
-                    enemy_speed = 1
+                    
+
                     return
                 if event.key == pygame.K_2:
                     difficulty = 2
                     scroll_speed = 1
-                    enemy_speed = 2
+                    
                     return
                 if event.key == pygame.K_3:
                     difficulty = 3
                     scroll_speed = 3
-                    enemy_speed = 3
+                    
                     return
 
 
@@ -127,28 +133,16 @@ def jump():
         player_is_jumping = True
         player_jump_speed = jump_power
 
-#def update_player():
-    #global player_x, player_y, player_is_jumping, player_current_jump_height, player_jump_speed 
-    #if player_is_jumping:
-     #   player_y -= player_jump_speed
-      #  player_current_jump_height += player_jump_speed
-       # oben_ist_zu = player_y <= 310 and (player_x > 300 and player_x < 500)
-        #if player_current_jump_height <= 0:
-         #   player_jump_speed = -player_jump_speed
-          #  player_is_jumping = False
-        #if (player_current_jump_height >= 200 or oben_ist_zu):
-         #   player_jump_speed = -player_jump_speed
-
 
 def update_player():
     global player_y, player_is_jumping, player_jump_speed
 
-    # Schwerkraft anwenden
+    # graivty
     if player_is_jumping:
         player_jump_speed += gravity
     player_y += player_jump_speed
 
-    # Kollision mit Plattformen prüfen
+    # colission with the platforms
     on_platform = False
     for rect in [(rect1_x, rect1_y, rect1_width, rect1_height),
                  (rect2_x, rect2_y, rect2_width, rect2_height),
@@ -158,17 +152,17 @@ def update_player():
             player_y + player_height >= rect[1] and 
             player_y + player_height <= rect[1] + rect[3] + 5):
             
-            player_y = rect[1] - player_height  # Auf Plattform setzen
+            player_y = rect[1] - player_height  
             player_is_jumping = False
-            player_jump_speed = 0  # Fall stoppen
+            player_jump_speed = 0  
             on_platform = True
-            break  # Keine weitere Bewegung mehr prüfen
+            break  
 
-    # Wenn der Spieler nicht auf einer Plattform ist, Schwerkraft anwenden
+    # if not on_platform:
     if not on_platform:
         player_is_jumping = True
 
-    # Kollision mit dem Boden
+    # colission with the ground
     if player_y >= GROUND_Level:
         player_y = GROUND_Level
         player_is_jumping = False
@@ -187,19 +181,6 @@ egg02_height = 50
 egg02_x = random.randint(0, window_width - egg_width)
 egg02_y = 0
 egg02_speed = 1
-
-# Set up the enemy
-enemy_width = 50
-enemy_height = 50
-enemy_x = random.randint(0, window_width - enemy_width)
-enemy_y = 0
-enemy_speed = 1
-
-enemy02_width = 50
-enemy02_height = 50
-enemy02_x = random.randint(0, window_width - enemy_width)
-enemy02_y = 0
-enemy02_speed = 1
 
 
 huhn_png = pygame.image.load("huhn.png").convert_alpha()
@@ -250,12 +231,12 @@ while running:
 
         
     
-     # Rechtecke nach links bewegen
+     # Rectangles moving
     rect1_x -= scroll_speed
     rect2_x -= scroll_speed
     rect3_x -= scroll_speed
 
-    # Rechtecke zurücksetzen, wenn sie den Bildschirm verlassen
+    # Reset the rectangles
     if rect1_x + rect1_width < 0:
         rect1_x = window_width
         rect1_y = random.randint(0, window_height - 20)
@@ -270,7 +251,7 @@ while running:
     # jump
     update_player()
      
-    # Spieler bewegen
+    # move the player
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT] and player_x > 0:
         player_x -= player_speed
@@ -286,10 +267,13 @@ while running:
     if (enemy_y > (window_height-20)):
         enemy_y = 0
         enemy_x = random.randint(0, window_width - enemy_width)
+
     enemy02_y += enemy02_speed
-    if (enemy_y > (window_height - 20)):
-        enemy_y = 0
-        enemy_x = random.randint(0, window_width - enemy_width)
+    if (enemy02_y > (window_height - 20)):
+        enemy02_y = 0
+        enemy02_x = random.randint(0, window_width - enemy02_width)
+
+    # Move the egg
     egg_y += egg_speed
     if (egg_y > (window_height - 20)):
         egg_y = 0
@@ -320,15 +304,12 @@ while running:
         egg02_x = random.randint(0, window_width - egg02_width)
         egg02_speed += 0.5
         egg_counter+=1
-        # Perform any additional actions when the egg is collected
-        # For example, increase the player's score or play a sound effect
-
 
     # Draw the game
     window.blit(background, (0 - background_shift, 0))
     window.blit(background, (window_width - background_shift, 0))
     background_shift += scroll_speed
-    if background_shift >= window_width:  # Corrected condition
+    if background_shift >= window_width:  
         background_shift = 0
 
     # Rectangle01
@@ -349,7 +330,7 @@ while running:
     window.blit(egg_02, (egg02_x, egg02_y))
 
     # Draw a counter of the eggs on the screen
-    draw_text(f"Eggs: {egg_counter}", 10, 10)
+    draw_text(f"Eggs: ${egg_counter}", 10, 10)
 
     #pygame.draw.rect(window, (255, 0, 0), (player_x, player_y, player_width, player_height))
     pygame.draw.circle(window, (204, 0, 0), (enemy_x + enemy_width // 2, enemy_y + enemy_height // 2), 30)
